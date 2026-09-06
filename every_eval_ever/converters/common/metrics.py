@@ -78,22 +78,32 @@ DISPERSION_METRICS: frozenset[str] = frozenset(
 # The eval-card-registry commit these ids were resolved against, on that repo's
 # main branch so anyone can check out the state that produced them. Bump it with
 # the map.
-METRIC_ID_REGISTRY_REVISION = '8b83e9c'
+METRIC_ID_REGISTRY_REVISION = '69b7eb5'
 
 # Harness metric name -> canonical registry metric id, matched case- and
 # separator-insensitively against each entry's id, display_name and aliases.
 # Only names the registry actually carries appear here; the rest are namespaced.
 CANONICAL_METRIC_IDS: dict[str, str] = {
     'acc': 'accuracy',
+    # Length-normalized accuracy is a different computation from `acc` on the
+    # same task, and the registry keeps it as its own canonical.
+    'acc_norm': 'normalized-accuracy',
     'accuracy': 'accuracy',
+    # The three perplexity spellings differ in the unit the log-likelihood is
+    # averaged over and are different numbers for one model, so each has its
+    # own canonical; `bits_per_byte` is log2 of byte perplexity.
+    'bits_per_byte': 'bits-per-byte',
     'bleu': 'bleu',
     'bleu_1': 'bleu-1',
     'bleu_4': 'bleu-4',
+    'byte_perplexity': 'byte-perplexity',
+    'calibration_error': 'calibration-error',
     'cer': 'cer',
     'em': 'exact-match',
     'exact_match': 'exact-match',
     'f1': 'f1',
     'f1_score': 'f1',
+    'mcc': 'matthews-correlation',
     'perplexity': 'perplexity',
     'precision': 'precision',
     'recall': 'recall',
@@ -102,6 +112,7 @@ CANONICAL_METRIC_IDS: dict[str, str] = {
     'rougeL': 'rouge-l',
     'rouge_l': 'rouge-l',
     'wer': 'wer',
+    'word_perplexity': 'word-perplexity',
 }
 
 # The family a metric aggregates safely within. Coarse on purpose: it says two

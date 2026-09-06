@@ -80,7 +80,7 @@ DISPERSION_METRICS: frozenset[str] = frozenset(
 # The eval-card-registry commit these ids were resolved against, on that repo's
 # main branch so anyone can check out the state that produced them. Bump it with
 # the map.
-METRIC_ID_REGISTRY_REVISION = '69b7eb5'
+METRIC_ID_REGISTRY_REVISION = '6123bb3'
 
 # Harness metric name -> canonical registry metric id, matched case- and
 # separator-insensitively against each entry's id, display_name and aliases.
@@ -146,7 +146,8 @@ HELD_BACK: dict[str, str] = {
         '(eval-card-registry#57 tracks the registry-wide scale choice)'
     ),
     'ter': (
-        "registry entry is [0, null]; lm-eval's sacrebleu value is percent "
+        "registry entry is [0, .inf), a fraction open above (insertions push "
+        "TER past 1); lm-eval's sacrebleu value is percent "
         '(same scale question as chrf)'
     ),
 }

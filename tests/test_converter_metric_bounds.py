@@ -202,6 +202,18 @@ def test_a_metric_the_registry_lacks_is_namespaced_rather_than_invented():
     )
 
 
+def test_held_back_names_stay_namespaced():
+    """A name the registry carries but whose scale (or route) disagrees with
+    what the converters publish must not resolve; HELD_BACK records why."""
+    from every_eval_ever.converters.common.metrics import HELD_BACK
+
+    for name in HELD_BACK:
+        assert name not in CANONICAL_METRIC_IDS, name
+        assert _identified(name, harness='lm-evaluation-harness').metric_id == (
+            f'lm-evaluation-harness.{name}'
+        )
+
+
 def test_two_spellings_of_one_metric_join_on_the_same_id():
     """The whole point of the field: same quantity, same id, whatever it was called."""
     assert _identified('em').metric_id == _identified('exact_match').metric_id

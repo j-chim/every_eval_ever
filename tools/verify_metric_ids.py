@@ -23,6 +23,7 @@ from pathlib import Path
 from every_eval_ever.converters.common.metrics import (
     CANONICAL_METRIC_IDS,
     DISPERSION_METRICS,
+    HELD_BACK,
     LOWER_IS_BETTER,
     METRIC_ID_REGISTRY_REVISION,
     METRIC_KINDS,
@@ -131,13 +132,16 @@ def main(argv: list[str] | None = None) -> int:
     stale: list[str] = []
     ambiguous: list[str] = []
     newly_resolvable: list[str] = []
+    held_back: list[str] = []
 
     for name in sorted(known_names):
         hits = index.get(normalize(name), set())
         mapped = CANONICAL_METRIC_IDS.get(name)
         if len(hits) > 1:
             ambiguous.append(f'{name} -> {sorted(hits)}')
-        if mapped is None and hits:
+        if mapped is None and hits and name in HELD_BACK:
+            held_back.append(f'{name} -> {sorted(hits)[0]}: {HELD_BACK[name]}')
+        elif mapped is None and hits:
             newly_resolvable.append(f'{name} -> {sorted(hits)[0]}')
         elif mapped is not None and mapped not in hits:
             stale.append(
@@ -152,7 +156,7 @@ def main(argv: list[str] | None = None) -> int:
         (known_names & DISPERSION_METRICS) - set(CANONICAL_METRIC_IDS)
     )
     unregistered = sorted(
-        known_names - set(CANONICAL_METRIC_IDS) - DISPERSION_METRICS
+        known_names - set(CANONICAL_METRIC_IDS) - DISPERSION_METRICS - set(HELD_BACK)
     )
 
     print(f'registry seed: {args.seed}')
@@ -173,6 +177,10 @@ def main(argv: list[str] | None = None) -> int:
         for row in rows:
             print(f'  {row}')
 
+    # Not a failure: a deliberate hold-back, with its reason.
+    print(f'\nRESOLVABLE, HELD BACK ON PURPOSE: {len(held_back)}')
+    for row in held_back:
+        print(f'  {row}')
     # Not a failure: these are the entries to propose upstream, and the converters
     # publish them namespaced in the meantime.
     print(f'\nNAMESPACED, WANTING A REGISTRY ENTRY: {len(unregistered)}')

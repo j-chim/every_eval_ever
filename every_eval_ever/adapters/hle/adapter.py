@@ -24,7 +24,8 @@ Each leaderboard row has shape:
 
 For every model the adapter emits one ``EvaluationLog`` with two
 ``EvaluationResult`` entries: ``hle/accuracy`` and
-``hle/calibration_error``.
+``hle/calibration_error`` (the latter published under the registry's
+``calibration-error`` metric id).
 
 Usage:
     uv run python -m every_eval_ever.adapters.hle.adapter --output-dir data/hle
@@ -403,7 +404,12 @@ def make_calibration_result(
                 'confidence scores alongside answers; calibration error '
                 'measures the deviation from perfect calibration.'
             ),
-            metric_id='hle.calibration_error',
+            # The registry's `calibration-error` ([0, 100], lower is better, with
+            # "RMS Calibration Error" among its aliases): the quantity and scale
+            # HLE publishes. (Accuracy
+            # stays namespaced: the registry's `accuracy` is [0, 1] and HLE's is
+            # 0-100.)
+            metric_id='calibration-error',
             metric_name='Calibration Error',
             metric_kind='calibration_error',
             metric_unit='percent',

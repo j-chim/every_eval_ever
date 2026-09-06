@@ -100,6 +100,8 @@ CANONICAL_METRIC_IDS: dict[str, str] = {
     'bleu_4': 'bleu-4',
     'brier_score': 'brier-score',
     'byte_perplexity': 'byte-perplexity',
+    # RMS calibration error on [0, 100]; the HLE adapter publishes it under
+    # this id directly, the converters would reach it through this map.
     'calibration_error': 'calibration-error',
     'cer': 'cer',
     'chain_of_thought_correctness': 'cot-correct',
@@ -112,10 +114,11 @@ CANONICAL_METRIC_IDS: dict[str, str] = {
     'ifeval_strict_accuracy': 'ifeval-strict-accuracy',
     'math_equiv': 'math-equivalent',
     'math_equiv_chain_of_thought': 'math-equivalent-chain-of-thought',
-    # lm-eval's `mc1` / `mc2` stats are registered only by the TruthfulQA
-    # tasks (and their translated ports), so the task-specific canonicals are
-    # right today. This is the one place a task-agnostic stat name is sent to a
-    # task-specific id: a future task emitting bare `mc1` would need a gate.
+    # Bare `mc1` / `mc2` stat names come only from older lm-eval (v0.3) and
+    # lighteval TruthfulQA logs; current lm-eval names the stat `acc` under the
+    # truthfulqa_mc1 / _mc2 tasks. This is the one place a task-agnostic stat
+    # name is sent to a task-specific id: a future task emitting bare `mc1`
+    # would need a gate.
     'mc1': 'truthfulqa-mc1',
     'mc2': 'truthfulqa-mc2',
     'mcc': 'matthews-correlation',
@@ -130,9 +133,22 @@ CANONICAL_METRIC_IDS: dict[str, str] = {
     'rouge_l': 'rouge-l',
     'rougeL': 'rouge-l',
     'rougeLsum': 'rouge-lsum',
-    'ter': 'ter',
     'wer': 'wer',
     'word_perplexity': 'word-perplexity',
+}
+
+# Names the registry carries but the map deliberately does NOT resolve, with
+# the reason. `tools.verify_metric_ids` reports these separately instead of
+# failing on them; a test pins that they stay namespaced.
+HELD_BACK: dict[str, str] = {
+    'chrf': (
+        "registry entry is on [0, 1]; lm-eval's sacrebleu value is 0-100 "
+        '(eval-card-registry#57 tracks the registry-wide scale choice)'
+    ),
+    'ter': (
+        "registry entry is [0, null]; lm-eval's sacrebleu value is percent "
+        '(same scale question as chrf)'
+    ),
 }
 
 # The family a metric aggregates safely within. Coarse on purpose: it says two

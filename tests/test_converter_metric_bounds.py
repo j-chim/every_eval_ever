@@ -192,9 +192,9 @@ def test_a_metric_the_registry_lacks_is_namespaced_rather_than_invented():
     The namespaced form still joins within the harness, and the marker is what
     lists the metrics owed a registry entry.
     """
-    config = _identified('quasi_exact_match', harness='helm')
+    config = _identified('ece', harness='helm')
 
-    assert config.metric_id == 'helm.quasi_exact_match'
+    assert config.metric_id == 'helm.ece'
     assert config.additional_details['metric_id_status'] == 'unregistered'
     # Dated, so a reader can tell whether the entry has been added since.
     assert config.additional_details['metric_id_registry_revision'] == (

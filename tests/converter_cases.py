@@ -163,18 +163,19 @@ CASES: tuple[ConverterCase, ...] = (
                 'quasi_prefix_exact_match@5',
             }
         ),
-        # Only plain `exact_match` resolves; HELM's near-miss variants and its
-        # best-of-k forms have no registry entry yet, so seven of the eight are
-        # namespaced. This set is the concrete list of gaps to file upstream.
+        # The four plain forms resolve to registry canonicals; HELM's best-of-k
+        # forms carry a parameter in the name and stay namespaced (the registry
+        # gives such metrics their own slugs, e.g. pass-at-1, so `exact_match@5`
+        # must not join `exact-match`).
         metric_ids=frozenset(
             {
                 'exact-match',
                 'helm.exact_match@5',
-                'helm.quasi_exact_match',
+                'quasi-exact-match',
                 'helm.quasi_exact_match@5',
-                'helm.prefix_exact_match',
+                'prefix-exact-match',
                 'helm.prefix_exact_match@5',
-                'helm.quasi_prefix_exact_match',
+                'quasi-prefix-exact-match',
                 'helm.quasi_prefix_exact_match@5',
             }
         ),

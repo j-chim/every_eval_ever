@@ -6,7 +6,9 @@ thing in every harness we convert, so their bounds are shared; anything whose
 scale is harness-specific belongs in that converter's own table, layered on top
 of `SHARED_METRIC_BOUNDS`. `bleu` is the cautionary example: sacrebleu (lm-eval)
 reports 0-100 while nltk's `sentence_bleu` (HELM's `bleu_1`/`bleu_4`) reports
-0-1, so the bare name cannot carry a range.
+0-1, so the bare name cannot carry a range. `chrf` is held back from
+`CANONICAL_METRIC_IDS` for the same reason: the registry's entry is on [0, 1]
+while lm-eval's sacrebleu value is 0-100 (eval-card-registry#57 tracks it).
 
 A metric that is in no table gets no bounds at all and a `bounds_status` marker,
 because `min_score`/`max_score` are nullable and "not provided" is true, while
@@ -101,7 +103,6 @@ CANONICAL_METRIC_IDS: dict[str, str] = {
     'calibration_error': 'calibration-error',
     'cer': 'cer',
     'chain_of_thought_correctness': 'cot-correct',
-    'chrf': 'chrf',
     'classification_macro_f1': 'macro-f1',
     'classification_micro_f1': 'micro-f1',
     'em': 'exact-match',
@@ -111,6 +112,10 @@ CANONICAL_METRIC_IDS: dict[str, str] = {
     'ifeval_strict_accuracy': 'ifeval-strict-accuracy',
     'math_equiv': 'math-equivalent',
     'math_equiv_chain_of_thought': 'math-equivalent-chain-of-thought',
+    # lm-eval's `mc1` / `mc2` stats are registered only by the TruthfulQA
+    # tasks (and their translated ports), so the task-specific canonicals are
+    # right today. This is the one place a task-agnostic stat name is sent to a
+    # task-specific id: a future task emitting bare `mc1` would need a gate.
     'mc1': 'truthfulqa-mc1',
     'mc2': 'truthfulqa-mc2',
     'mcc': 'matthews-correlation',
@@ -145,6 +150,7 @@ METRIC_KINDS: dict[str, str] = {
     'math_equiv': 'accuracy',
     'math_equiv_chain_of_thought': 'accuracy',
     'mc1': 'accuracy',
+    'mc2': 'accuracy',
     'prefix_exact_match': 'accuracy',
     'quasi_exact_match': 'accuracy',
     'quasi_prefix_exact_match': 'accuracy',
